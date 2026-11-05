@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="مالی"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2f2f7"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000">
-<title>مدیریت درآمد و پس‌انداز</title><script>try{if(top===self&&Date.now()-(+localStorage.getItem('moneyapp_seen')||0)>9e5)document.documentElement.classList.add('lk')}catch(e){}</script>
+<title>مدیریت درآمد و پس‌انداز</title><script>try{if(top===self&&Date.now()-(+localStorage.getItem('moneyapp_seen')||0)>9e5)document.documentElement.classList.add('lk')}catch(e){}
+if(top===self&&'serviceWorker'in navigator)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <style>html.lk #app,html.lk nav,html.lk #fab,html.lk .toast,html.lk .succ,html.lk .cele{visibility:hidden}
 html.lk body::after{content:"در حال اتصال… اگر طول کشید، اینترنت را بررسی کنید.";position:fixed;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--mu);font-size:14px}</style>
 
@@ -939,7 +940,7 @@ const SBDB = { collection: () => ({ doc: id => ({
   async delete() {}
 }) }) };
 let EMAIL = '';
-async function start(user) { UID = user.id; EMAIL = user.email || ''; DB = SBDB; hideLogin(); await sync(); draw(); }
+async function start(user) { UID = user.id; EMAIL = user.email || ''; DB = SBDB; if (!isLocked()) hideLogin(); await sync(); draw(); }
 // ---- lock: 'moneyapp_seen' = last time someone used the open page; 15 minutes without use → password again
 const IDLE = 15 * 60 * 1000, SEEN = 'moneyapp_seen', H = document.documentElement;
 const isLocked = () => H.classList.contains('lk');
@@ -947,6 +948,20 @@ const seen = () => { try { return +localStorage.getItem(SEEN) || 0; } catch (e) 
 const mark = () => { if (UID && !isLocked()) try { localStorage.setItem(SEEN, String(Date.now())); } catch (e) {} };
 function unlock() { H.classList.remove('lk'); try { localStorage.setItem(SEEN, String(Date.now())); } catch (e) {} }
 const tooLong = () => top === self && Date.now() - seen() > IDLE;
+// ---- offline: a no-network error from Supabase, and a password check that works without the network.
+// moneyapp_pv holds only a salted PBKDF2 hash of the account password (never the password); it is written after each
+// successful online sign-in/unlock/password change and removed with the other moneyapp keys on sign-out.
+const isNet = e => !!e && (e.name === 'AuthRetryableFetchError' || e.status === 0 || /fetch|network|load failed/i.test(e.message || ''));
+const PV = 'moneyapp_pv', te = new TextEncoder();
+async function pvHash(pw, salt) {
+  const k = await crypto.subtle.importKey('raw', te.encode(pw), 'PBKDF2', false, ['deriveBits']);
+  const b = await crypto.subtle.deriveBits({ name: 'PBKDF2', salt: te.encode(salt), iterations: 150000, hash: 'SHA-256' }, k, 256);
+  return btoa(String.fromCharCode(...new Uint8Array(b)));
+}
+async function pvSave(pw) { try { const s = Array.from(crypto.getRandomValues(new Uint32Array(4))).join('-'); localStorage.setItem(PV, JSON.stringify({ s, h: await pvHash(pw, s) })); } catch (e) {} }
+async function pvCheck(pw) { try { const o = JSON.parse(localStorage.getItem(PV) || 'null'); return !!o && (await pvHash(pw, o.s)) === o.h; } catch (e) { return false; } }
+// the signed-in user Supabase keeps on the device, for starting without a network
+const storedUser = () => { try { const o = JSON.parse(localStorage.getItem('sb-ffllcucoezsjzgvsulup-auth-token') || 'null'); return o && o.user && o.user.id ? o.user : null; } catch (e) { return null; } };
 function showLock() {
   H.classList.add('lk'); hideLogin();
   const l = document.createElement('div'); l.className = 'sgn'; l.id = 'sgn';
@@ -960,9 +975,17 @@ function showLock() {
   l.querySelector('#lk_e').value = EMAIL;
   const f = l.querySelector('form'), er = l.querySelector('.er'), busy = b => l.querySelectorAll('button').forEach(x => x.disabled = b);
   f.onsubmit = async e => { e.preventDefault(); busy(true); er.classList.remove('ok'); er.textContent = '';
-    const r = await sb.auth.signInWithPassword({ email: EMAIL, password: l.querySelector('#lk_p').value }); busy(false);
+    const pw = l.querySelector('#lk_p').value;
+    const r = navigator.onLine ? await sb.auth.signInWithPassword({ email: EMAIL, password: pw }) : { error: { name: 'AuthRetryableFetchError', message: 'offline' } };
+    if (r.error && isNet(r.error)) {   // no internet: check against the hash saved at the last online sign-in
+      const ok = await pvCheck(pw); busy(false);
+      if (!localStorage.getItem(PV)) { er.textContent = 'اینترنت وصل نیست؛ برای اولین باز کردن قفل روی این دستگاه به اینترنت نیاز است.'; return; }
+      if (!ok) { er.textContent = 'رمز اشتباه است.'; return; }
+      hideLogin(); unlock(); return;
+    }
+    busy(false);
     if (r.error) { er.textContent = r.error.message === 'Invalid login credentials' ? 'رمز اشتباه است.' : fa(r.error); return; }
-    hideLogin(); unlock(); sync(); };
+    pvSave(pw); hideLogin(); unlock(); sync(); };
   l.querySelector('[data-k=fg]').onclick = async () => { busy(true); er.classList.remove('ok'); er.textContent = '';
     const r = await sb.auth.resetPasswordForEmail(EMAIL, { redirectTo: location.origin + location.pathname }); busy(false);
     if (r.error) er.textContent = fa(r.error);
@@ -974,7 +997,7 @@ function showLock() {
 document.addEventListener('visibilitychange', () => { if (document.hidden) mark(); else if (UID && !isLocked() && tooLong()) showLock(); });
 setInterval(() => { if (UID && !isLocked() && !document.hidden && tooLong()) showLock(); }, 30000);
 const FA = { 'Invalid login credentials': 'ایمیل یا رمز اشتباه است.', 'Email not confirmed': 'ایمیل هنوز تأیید نشده؛ لینک داخل ایمیل را بزنید.', 'User already registered': 'با این ایمیل قبلاً حساب ساخته شده؛ «ورود» را بزنید.' };
-const fa = e => { const s = (e && e.message) || ''; return FA[s] || (/rate limit|only request this|seconds/i.test(s) ? 'چند دقیقه صبر کنید و دوباره امتحان کنید (محدودیت ارسال ایمیل).'
+const fa = e => { const s = (e && e.message) || ''; return FA[s] || (isNet(e) ? 'اینترنت وصل نیست؛ وصل کنید و دوباره امتحان کنید.' :/rate limit|only request this|seconds/i.test(s) ? 'چند دقیقه صبر کنید و دوباره امتحان کنید (محدودیت ارسال ایمیل).'
   : /different from the old/i.test(s) ? 'رمز جدید باید با رمز قبلی فرق داشته باشد.'
   : /password/i.test(s) ? 'رمز باید حداقل ۶ حرف باشد.' : '❌ ' + (s || 'اتصال ممکن نشد؛ اینترنت را بررسی کنید.')); };
 function hideLogin() { const l = document.getElementById('sgn'); if (l) l.remove(); }
@@ -992,11 +1015,11 @@ function showLogin() {
   const busy = b => l.querySelectorAll('button').forEach(x => x.disabled = b);
   f.onsubmit = async e => { e.preventDefault(); busy(true); er.textContent = '';
     const r = await sb.auth.signInWithPassword({ email: em(), password: pw() }); busy(false);
-    if (r.error) er.textContent = fa(r.error); else { unlock(); start(r.data.user); } };
+    if (r.error) er.textContent = fa(r.error); else { pvSave(pw()); unlock(); start(r.data.user); } };
   l.querySelector('[data-k=up]').onclick = async () => { if (!f.reportValidity()) return; busy(true); er.textContent = '';
     const r = await sb.auth.signUp({ email: em(), password: pw() }); busy(false);
     if (r.error) er.textContent = fa(r.error);
-    else if (r.data.session) { unlock(); start(r.data.user); }
+    else if (r.data.session) { pvSave(pw()); unlock(); start(r.data.user); }
     else er.textContent = '✉️ ایمیل تأیید فرستاده شد؛ لینکش را بزنید و بعد «ورود» را بزنید.'; };
   try { if (sessionStorage.getItem('signedout')) { sessionStorage.removeItem('signedout'); er.classList.add('ok'); er.textContent = '✅ از حساب خارج شدید و اطلاعات از این دستگاه پاک شد. با ورود دوباره همه چیز برمی‌گردد.'; } } catch (e) {}
   // forgot password: Supabase emails a link that opens this site again with a recovery session (see REC below)
@@ -1023,7 +1046,7 @@ function showNewPw() {
     l.querySelectorAll('button').forEach(x => x.disabled = true); er.textContent = '';
     const r = await sb.auth.updateUser({ password: a }); l.querySelectorAll('button').forEach(x => x.disabled = false);
     if (r.error) { er.textContent = fa(r.error); return; }
-    hideLogin(); msg = '✅ رمز عوض شد؛ از این به بعد با رمز جدید وارد شو.'; draw(); };
+    pvSave(a); hideLogin(); msg = '✅ رمز عوض شد؛ از این به بعد با رمز جدید وارد شو.'; draw(); };
 }
 // sign-out: make sure the cloud already holds this device's latest change, then remove the device copy
 // (so the next person at a shared computer sees nothing). Nothing is removed if the cloud is not up to date.
@@ -1044,7 +1067,13 @@ window.showLogin = showLogin; window.signOut = signOut;
 // account card at the top of the Finance page
 const setPage = V.set;
 V.set = () => `<div class="c"><h3>حساب</h3>${UID ? `<div class="r"><span>وارد شده با <b dir="ltr">${E(EMAIL)}</b></span><button onclick="signOut()">خروج</button></div><small>با «خروج» اطلاعات از همین دستگاه پاک می‌شود و در فضای ابری می‌ماند؛ با ورود دوباره برمی‌گردد.</small>` : `<div class="r"><span class="mu">وارد نشده‌اید؛ داده‌ها فقط روی همین دستگاه‌اند.</span><button class="p" onclick="showLogin()">ورود</button></div>`}</div>` + setPage();
-const { data: { session } } = await sb.auth.getSession();
+// offline, Supabase keeps retrying an expired token for ~30 s; don't wait for it when there is no network or it is slow
+const t0 = navigator.onLine ? Promise.race([sb.auth.getSession(), new Promise(r => setTimeout(() => r({ data: { session: null }, error: { name: 'AuthRetryableFetchError', message: 'timeout' } }), 4000))])
+  : Promise.resolve({ data: { session: null }, error: { name: 'AuthRetryableFetchError', message: 'offline' } });
+let { data: { session }, error: se } = await t0;
+// no network and an expired token: Supabase keeps the stored sign-in, so open on this device's copy; changes sync when back online
+if (!session && !REC) { const u = storedUser(); if (u && (!navigator.onLine || isNet(se))) session = { user: u }; }
+addEventListener('online', () => { if (UID && !CONFLICT) sync().then(() => { if (!document.activeElement || !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) draw(); }); });
 if (REC) history.replaceState(null, '', location.pathname);   // keep the one-time link out of the address bar
 if (session) {
   EMAIL = session.user.email || '';
