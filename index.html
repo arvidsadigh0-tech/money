@@ -285,7 +285,8 @@ let S=safeLoad(),tab='dash',P=null,msg='',D=null,ED=null,W='',sel=new Set(),SL=[
 function R(x){return Math.round(x*100)/100}
 const wk=d=>{const [y,m,dd]=String(d).split('-').map(Number);return y?new Date(y,m-1,dd).toLocaleDateString('fa-IR',{weekday:'long'}):''};
 const E=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-const $$=n=>(+n||0).toLocaleString('en',{maximumFractionDigits:2});
+// whole numbers on screen (user, 2026-11-05); the stored data keeps whatever cents it has
+const $$=n=>(+n||0).toLocaleString('en',{maximumFractionDigits:0});
 const m=n=>'$'+$$(n);
 const dig=s=>String(s).replace(/[۰-۹]/g,d=>'۰۱۲۳۴۵۶۷۸۹'.indexOf(d)).replace(/[٠-٩]/g,d=>'٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace('٫','.');
 const num=s=>parseFloat(dig(s).replace(/[,٬]/g,''));
@@ -322,11 +323,10 @@ const d1=R(g*a/100),d2=R((g-d1)*b/100),ded=[['کسر '+a+'٪ (Preply) از نا�
 let r=R(g-d1-d2-mo);
 if(r<0)return{err:'نتیجه منفی شد؛ ثبت نمی‌شود.',ded};
 if(r-em>=0){ded.push(['شرایط اضطراری',em]);r=R(r-em)}else w.push('کسر شرایط اضطراری اعمال نشد (نتیجه منفی می‌شد).');
-// payback share: exactly rp% of what is left after the emergency cut (to the cent), until the boxes are full. The user
-// wants the 50% kept under all conditions (2026-11-04), so while a share is taken and there is no daily money the
-// final keeps its cents instead of being rounded to whole dollars
-let rep=0;const left=rp>0?debtLeft(ex):0;if(left>0){rep=Math.min(R(r*rp/100),left);if(rep>0)ded.push(['جبران برداشت ('+rp+'٪)',rep])}
-const r2=R(r-rep),f=rep&&!dp?r2:Math.round(r2-R(r2*dp/100)),dy=R(r2-f);return{ded,w,net:f,pre:r2,daily:dy,chk:f,dp,rep}}
+// payback share, whole dollars only (user, 2026-11-05): drop the cents of what is left after the emergency cut, then
+// rp% of those dollars (an odd dollar rounds to the payback) goes to the boxes until they are full; the rest is the final
+let rep=0;const left=rp>0?debtLeft(ex):0;if(left>0){rep=Math.min(dp?R(r*rp/100):Math.round(Math.floor(r)*rp/100),left);if(rep>0)ded.push(['جبران برداشت ('+rp+'٪)',rep])}
+const r2=R(r-rep),f=rep&&!dp?Math.floor(r2):Math.round(r2-R(r2*dp/100)),dy=R(r2-f);return{ded,w,net:f,pre:r2,daily:dy,chk:f,dp,rep}}
 const esc=x=>x.replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
 function parse(text,d){const items={};
 text.split(/\n/).forEach(l0=>{const l=dig(l0).trim();if(!l)return;
@@ -538,7 +538,7 @@ h+=`<div class="c"><h3>روزهای ثبت‌شده</h3><p><b>${L.length} روز
 // days grouped by month; each row: select, date + status, final amount; edit/delete live in the row's details
 const GM={};L.forEach(i=>(GM[i.d.slice(0,7)]=GM[i.d.slice(0,7)]||[]).push(i));
 h+=Object.entries(GM).map(([mo,arr])=>`<div class="mh"><b>${mo}</b><span>${arr.length} روز · <b>${m(R(arr.reduce((a,i)=>a+fin(i),0)))}</b></span></div><div class="c list">`+arr.map(i=>{const w=wOf(i),st=!w?'در Wallet':w.dd?`✅ واریز شد (برداشت ${S.wds.indexOf(w)+1})`:`نزد صراف (برداشت ${S.wds.indexOf(w)+1})`;
-return`<div class="day${sel.has(i.id)?' sel':''}${OPEN==i.id?' open':''}" data-id="${i.id}"><div class="swp"><div class="sw-act"><button class="sw-e" onclick="ED=${i.id};OPEN=0;draw()">✏️ ویرایش</button><button class="sw-d" onclick="OPEN=${i.id};delI(${i.id})">${D=='i'+i.id?'مطمئنی؟ ✓':'🗑 حذف'}</button></div><div class="dr"><input type="checkbox" aria-label="انتخاب ${i.d}" ${sel.has(i.id)?'checked':''} onchange="tg(${i.id})"><div class="dm"><b>${i.d} ${wk(i.d)}</b><div class="ds"><span class="pill ${!w?'pw':w.dd?'pd':'pe'}">${st}</span>${i.old?'<small>قدیمی</small>':''}${DC[i.d]>1?'<span class="bad">⚠️ تاریخ تکراری</span>':''}</div></div><div class="da">${i.chk!=null?`<b class="ok">${m(i.chk)}</b>`:`<b>${m(i.net)}</b>`}<small>ناخالص ${m(i.gross)}</small></div></div></div>${ED==i.id?edit(i):''}<details${D=='i'+i.id?' open':''}><summary>جزئیات</summary>${i.chk!=null?`<small>نهایی ${m(i.chk)}${tmn(i.chk)} · قبل از کسر پول روزانه: ${m(i.pre!=null?i.pre:i.net)}</small>`:`<small>خالص ${m(i.net)}</small>`}${ded(i.ded||[])}${(i.items||[]).map(x=>`<small>${E(x.n)} × ${x.c}</small>`).join('<br>')}${(i.hist||[]).map(h=>`<br><small>🕘 ${h.at}: ${h.d}، ناخالص ${m(h.gross)}، نهایی ${m(h.chk!=null?h.chk:h.net)}</small>`).join('')}<div class="r"><button aria-label="ویرایش روز" onclick="ED=${i.id};draw()">✏️ ویرایش</button><button aria-label="حذف روز" onclick="delI(${i.id})">${D=='i'+i.id?'مطمئنی؟ ✓':'🗑 حذف'}</button></div></details></div>`}).join('')+'</div>').join('');return h},
+return`<div class="day${sel.has(i.id)?' sel':''}${OPEN==i.id?' open':''}" data-id="${i.id}"><div class="swp"><div class="sw-act"><button class="sw-e" onclick="ED=${i.id};OPEN=0;draw()">✏️ ویرایش</button><button class="sw-d" onclick="OPEN=${i.id};delI(${i.id})">${D=='i'+i.id?'مطمئنی؟ ✓':'🗑 حذف'}</button></div><div class="dr"><input type="checkbox" aria-label="انتخاب ${i.d}" ${sel.has(i.id)?'checked':''} onchange="tg(${i.id})"><div class="dm"><b>${i.d} ${wk(i.d)}</b><div class="ds"><span class="pill ${!w?'pw':w.dd?'pd':'pe'}">${st}</span>${i.old?'<small>قدیمی</small>':''}${DC[i.d]>1?'<span class="bad">⚠️ تاریخ تکراری</span>':''}</div></div><div class="da">${i.chk!=null?`<b class="ok">${m(i.chk)}</b>`:`<b>${m(i.net)}</b>`}<small>ناخالص ${m(i.gross)}</small></div></div></div>${ED==i.id?edit(i):''}<details${D=='i'+i.id?' open':''}><summary>جزئیات</summary>${i.chk!=null?`<small>نهایی ${m(i.chk)}${tmn(i.chk)}${rv('daily',i.d)?` · قبل از کسر پول روزانه: ${m(i.pre!=null?i.pre:i.net)}`:''}</small>`:`<small>خالص ${m(i.net)}</small>`}${ded(i.ded||[])}${(i.items||[]).map(x=>`<small>${E(x.n)} × ${x.c}</small>`).join('<br>')}${(i.hist||[]).map(h=>`<br><small>🕘 ${h.at}: ${h.d}، ناخالص ${m(h.gross)}، نهایی ${m(h.chk!=null?h.chk:h.net)}</small>`).join('')}<div class="r"><button aria-label="ویرایش روز" onclick="ED=${i.id};draw()">✏️ ویرایش</button><button aria-label="حذف روز" onclick="delI(${i.id})">${D=='i'+i.id?'مطمئنی؟ ✓':'🗑 حذف'}</button></div></details></div>`}).join('')+'</div>').join('');return h},
 wd(){return`<div class="c"><small>برای ثبت برداشت، در «روزهای کار» روزها را انتخاب کنید.</small></div>`+(S.wds.slice().reverse().map(w=>{const L=S.incomes.filter(i=>i.wid==w.id),k=S.wds.indexOf(w)+1,sm=R(L.reduce((a,i)=>a+i.net,0));
 return`<div class="c wdc"><div class="ch"><h3>برداشت ${k}</h3><span class="pill ${w.dd?'pd':'pe'}">${w.dd?'واریز شد':'نزد صراف'}</span></div><div class="hv2">${m(w.amt)}</div><div class="k">${w.d} ${wk(w.d)} · جمع روزها ${m(sm)}${tmn(w.amt)}${w.amt<sm?` · مانده در Wallet ${m(sm-w.amt)}`:''}</div>
 <div class="tw"><table>${L.map(i=>`<tr><td>${i.d} ${wk(i.d)}</td><td>${m(i.net)}</td></tr>`).join('')}</table></div>
