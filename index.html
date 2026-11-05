@@ -365,6 +365,7 @@ th{font-weight:600}td{padding:10px 6px}
 .sgn .c{width:100%;max-width:380px;margin:0}.sgn h2{margin:0 0 4px;font-size:22px}.sgn p{margin:0 0 14px;color:var(--mu);font-size:14px}
 .sgn label{display:block;margin:10px 0 4px;font-size:13px;color:var(--mu)}.sgn input{width:100%;box-sizing:border-box}
 .sgn .r{margin-top:16px}.sgn .r button{flex:1}.sgn .er{color:var(--bad);font-size:14px;min-height:20px;margin-top:10px}.sgn .sk{background:transparent;color:var(--mu);width:100%;margin-top:6px}
+.sgn .er.ok{color:var(--green)}.sgn .fg{background:transparent;min-height:0;padding:6px 0 0;font-size:13px;font-weight:600;color:color-mix(in srgb,var(--vio) 70%,var(--tx))}
 </style></head><body>
 <nav id="nav"></nav><button id="fab" onclick="goNew()"><svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14M12 5v14"/></svg> روز جدید</button><div id="app"></div>
 <script>
@@ -917,6 +918,8 @@ try{route()}catch(e){}
 </script>
 <script type="module">
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/+esm';
+// read before the client consumes the link: a password-reset link lands here with #...type=recovery
+const REC = /type=recovery/.test(location.hash);
 const sb = createClient('https://ffllcucoezsjzgvsulup.supabase.co', 'sb_publishable_CpHzJdu2tVYkGwBvI_t_5A_BU81jDrT');
 const must = r => { if (r.error) throw r.error; return r.data; };
 // 'app' = the user's single app_state row; 'bk' = yesterday's snapshot into app_backup; chunk docs never occur (CH is huge)
@@ -935,7 +938,9 @@ const SBDB = { collection: () => ({ doc: id => ({
 let EMAIL = '';
 async function start(user) { UID = user.id; EMAIL = user.email || ''; DB = SBDB; hideLogin(); await sync(); draw(); }
 const FA = { 'Invalid login credentials': 'ایمیل یا رمز اشتباه است.', 'Email not confirmed': 'ایمیل هنوز تأیید نشده؛ لینک داخل ایمیل را بزنید.', 'User already registered': 'با این ایمیل قبلاً حساب ساخته شده؛ «ورود» را بزنید.' };
-const fa = e => FA[e && e.message] || (/password/i.test(e && e.message) ? 'رمز باید حداقل ۶ حرف باشد.' : '❌ ' + ((e && e.message) || 'اتصال ممکن نشد؛ اینترنت را بررسی کنید.'));
+const fa = e => { const s = (e && e.message) || ''; return FA[s] || (/rate limit|only request this|seconds/i.test(s) ? 'چند دقیقه صبر کنید و دوباره امتحان کنید (محدودیت ارسال ایمیل).'
+  : /different from the old/i.test(s) ? 'رمز جدید باید با رمز قبلی فرق داشته باشد.'
+  : /password/i.test(s) ? 'رمز باید حداقل ۶ حرف باشد.' : '❌ ' + (s || 'اتصال ممکن نشد؛ اینترنت را بررسی کنید.')); };
 function hideLogin() { const l = document.getElementById('sgn'); if (l) l.remove(); }
 function showLogin() {
   hideLogin();
@@ -943,6 +948,7 @@ function showLogin() {
   l.innerHTML = `<form class="c" autocomplete="on"><h2>مدیریت درآمد و پس‌انداز</h2><p>برای ذخیره و هماهنگی بین گوشی و کامپیوتر وارد شوید.</p>
 <label for="lg_e">ایمیل</label><input id="lg_e" type="email" autocomplete="username" dir="ltr" required>
 <label for="lg_p">رمز</label><input id="lg_p" type="password" autocomplete="current-password" dir="ltr" required minlength="6">
+<button type="button" class="fg" data-k="fg">رمز را فراموش کردم</button>
 <div class="er" role="alert" aria-live="polite"></div>
 <div class="r"><button class="p" type="submit">ورود</button><button type="button" data-k="up">ساخت حساب</button></div>
 <button type="button" class="sk" data-k="skip">فعلاً بدون ورود (فقط روی همین دستگاه)</button></form>`;
@@ -958,6 +964,31 @@ function showLogin() {
     else if (r.data.session) start(r.data.user);
     else er.textContent = '✉️ ایمیل تأیید فرستاده شد؛ لینکش را بزنید و بعد «ورود» را بزنید.'; };
   l.querySelector('[data-k=skip]').onclick = hideLogin;
+  // forgot password: Supabase emails a link that opens this site again with a recovery session (see REC below)
+  l.querySelector('[data-k=fg]').onclick = async () => { const x = l.querySelector('#lg_e'); er.classList.remove('ok');
+    if (!em() || !x.checkValidity()) { er.textContent = 'اول ایمیلت را در کادر «ایمیل» بنویس، بعد این را بزن.'; x.focus(); return; }
+    busy(true); er.textContent = '';
+    const r = await sb.auth.resetPasswordForEmail(em(), { redirectTo: location.origin + location.pathname }); busy(false);
+    if (r.error) er.textContent = fa(r.error);
+    else { er.classList.add('ok'); er.textContent = '✉️ اگر حسابی با این ایمیل باشد، لینک تغییر رمز فرستاده شد. ایمیل را باز کن و لینک را بزن (پوشهٔ Spam را هم ببین).'; } };
+}
+// after a reset link: ask for the new password (the user is already signed in by the link)
+function showNewPw() {
+  hideLogin();
+  const l = document.createElement('div'); l.className = 'sgn'; l.id = 'sgn';
+  l.innerHTML = `<form class="c"><h2>رمز جدید</h2><p>یک رمز تازه بنویس (حداقل ۶ حرف).</p>
+<label for="np1">رمز جدید</label><input id="np1" type="password" autocomplete="new-password" dir="ltr" required minlength="6">
+<label for="np2">تکرار رمز جدید</label><input id="np2" type="password" autocomplete="new-password" dir="ltr" required minlength="6">
+<div class="er" role="alert" aria-live="polite"></div>
+<div class="r"><button class="p" type="submit">ذخیرهٔ رمز جدید</button></div></form>`;
+  document.body.appendChild(l);
+  const f = l.querySelector('form'), er = l.querySelector('.er');
+  f.onsubmit = async e => { e.preventDefault(); const a = l.querySelector('#np1').value, b = l.querySelector('#np2').value;
+    if (a !== b) { er.textContent = 'دو رمز یکی نیستند؛ دوباره بنویس.'; return; }
+    l.querySelectorAll('button').forEach(x => x.disabled = true); er.textContent = '';
+    const r = await sb.auth.updateUser({ password: a }); l.querySelectorAll('button').forEach(x => x.disabled = false);
+    if (r.error) { er.textContent = fa(r.error); return; }
+    hideLogin(); msg = '✅ رمز عوض شد؛ از این به بعد با رمز جدید وارد شو.'; draw(); };
 }
 async function signOut() { await sb.auth.signOut(); DB = null; UID = null; hyd = false; EMAIL = ''; msg = 'از حساب خارج شدید؛ داده‌های این دستگاه سر جایشان هستند.'; draw(); }
 window.showLogin = showLogin; window.signOut = signOut;
@@ -965,7 +996,9 @@ window.showLogin = showLogin; window.signOut = signOut;
 const setPage = V.set;
 V.set = () => `<div class="c"><h3>حساب</h3>${UID ? `<div class="r"><span>وارد شده با <b dir="ltr">${E(EMAIL)}</b></span><button onclick="signOut()">خروج</button></div>` : `<div class="r"><span class="mu">وارد نشده‌اید؛ داده‌ها فقط روی همین دستگاه‌اند.</span><button class="p" onclick="showLogin()">ورود</button></div>`}</div>` + setPage();
 const { data: { session } } = await sb.auth.getSession();
-if (session) start(session.user);
+if (REC) history.replaceState(null, '', location.pathname);   // keep the one-time link out of the address bar
+if (session) { await start(session.user); if (REC) showNewPw(); }
+else if (REC) { showLogin(); const er = document.querySelector('#sgn .er'); if (er) er.textContent = 'لینک تغییر رمز منقضی شده یا قبلاً استفاده شده؛ دوباره «رمز را فراموش کردم» را بزن.'; }
 else if (top === self) showLogin();   // inside the test runner's frame the screen stays out of the way
 </script>
 </body></html>
