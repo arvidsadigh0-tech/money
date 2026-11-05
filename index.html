@@ -69,8 +69,9 @@ html{height:100%}
 body{padding:0;height:100%;display:flex;flex-direction:column;overflow:hidden;position:relative}
 #app{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:0 12px 28px;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
 nav{position:static;flex:none;-webkit-backdrop-filter:none;backdrop-filter:none;background:var(--card)}
-#fab{position:absolute;left:14px;bottom:84px}
-.toast{position:absolute;bottom:150px}
+/* REG-12: on a home-screen iPhone the nav grows by the home-indicator inset, so everything that floats above it moves up too */
+#fab{position:absolute;left:14px;bottom:calc(84px + env(safe-area-inset-bottom,0px))}
+.toast{position:absolute;bottom:calc(150px + env(safe-area-inset-bottom,0px))}
 #app.anim>*{animation-duration:.2s}
 #app{order:1;touch-action:pan-y}nav{order:2}
 html,body{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;overflow:hidden;touch-action:pan-y}
@@ -186,7 +187,7 @@ h1.lt,h3{text-wrap:balance}
 .r:has(>.fl #cd){gap:8px}.r:has(>.fl #cd)>button{min-height:36px;padding:0 12px}
 .r:has(>.fl){align-items:flex-end;gap:10px}
 /* success card: rises from the bottom, check draws itself, leaves on its own or on tap */
-.succ{position:absolute;left:16px;right:16px;bottom:96px;z-index:30;display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:20px;background:var(--card);color:var(--tx);box-shadow:0 18px 40px -16px rgba(0,0,0,.45),0 0 0 1px var(--bd);animation:succIn .42s cubic-bezier(.32,.72,0,1) both;cursor:pointer}
+.succ{position:absolute;left:16px;right:16px;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:30;display:flex;align-items:center;gap:14px;padding:14px 16px;border-radius:20px;background:var(--card);color:var(--tx);box-shadow:0 18px 40px -16px rgba(0,0,0,.45),0 0 0 1px var(--bd);animation:succIn .42s cubic-bezier(.32,.72,0,1) both;cursor:pointer}
 .succ.out{animation:succOut .22s ease-in both}
 @keyframes succIn{from{opacity:0;transform:translateY(24px) scale(.96)}to{opacity:1;transform:none}}
 @keyframes succOut{to{opacity:0;transform:translateY(12px) scale(.98)}}
@@ -798,11 +799,14 @@ const HM={home:'dash',days:'cls',withdrawals:'wd',report:'rep',planner:'plan',st
 function route(){const h=location.hash.slice(1);if(h=='new'){if(tab!='cls'||P||mode!='list')goNew();else{const t=document.getElementById('ct');if(t)t.focus()}return}if(HM[h]&&HM[h]!=tab)go(HM[h])}
 try{addEventListener('hashchange',()=>{try{route()}catch(e){}})}catch(e){}
 try{const c=document.createElement('canvas');c.width=c.height=180;const x=c.getContext('2d');x.fillStyle='#2563eb';x.fillRect(0,0,180,180);x.font='110px serif';x.textAlign='center';x.textBaseline='middle';x.fillText('💰',90,98);const l=document.createElement('link');l.rel='apple-touch-icon';l.href=c.toDataURL('image/png');document.head.appendChild(l)}catch(e){}
-document.addEventListener('focusin',e=>{if(e.target.matches&&e.target.matches('input:not([type=checkbox]),textarea,select'))document.body.classList.add('kb')});
-document.addEventListener('focusout',()=>setTimeout(()=>document.body.classList.remove('kb'),80));
-// REG-10: on iPhone a button tap leaves the field focused and Safari sends no focusout when a redraw removes it, so the
-// "keyboard open" class (which hides the bottom menu) got stuck; after every redraw keep it only if a field still has focus
-function kbCheck(){const a=document.activeElement;if(!(a&&a.isConnected&&a.matches&&a.matches('input:not([type=checkbox]),textarea,select')))document.body.classList.remove('kb')}
+// The bottom menu hides only while the on-screen keyboard is really up: a field has focus AND the visible screen got
+// shorter. REG-10: a redraw can remove the focused field without any focusout. REG-12: on a home-screen iPhone a field
+// focused by code (e.g. «روز جدید») gets focus but no keyboard, which used to hide the menu with no way back.
+function kbCheck(){const a=document.activeElement,field=a&&a.isConnected&&a.matches&&a.matches('input:not([type=checkbox]),textarea,select'),vv=window.visualViewport;
+document.body.classList.toggle('kb',!!(field&&vv&&innerHeight-vv.height>150))}
+document.addEventListener('focusin',()=>{kbCheck();setTimeout(kbCheck,350)});
+document.addEventListener('focusout',()=>setTimeout(kbCheck,80));
+if(window.visualViewport)visualViewport.addEventListener('resize',kbCheck);
 draw();
 try{route()}catch(e){}
 </script>
