@@ -266,6 +266,99 @@ details[open]>:not(summary){animation:fo .2s ease-out}
 .ctip{margin-top:6px;min-height:22px}
 @keyframes fo{from{opacity:0}to{opacity:1}}
 #app.anim>*,#app.anim>*:nth-child(n){animation:fo .15s ease-out both;animation-delay:0s}
+/* ===== Copilot + Monzo look: warm coral hero, navy ink, soft lavender ground, pastel violet charts, round friendly shapes ===== */
+:root{--bg:#f5f3fa;--card:#fff;--tx:#14233c;--mu:#62677e;--rule:#efedf5;--bd:#e6e3ee;--ac:#14233c;--on-ac:#fff;--coral:#ff5a4c;--vio:#7c5cff;--fab:#14233c;--on-fab:#fff;
+--blue:#4f6ef7;--amber:#c26a00;--green:#14945f;--slate:#8d90a3;--sh:0 1px 0 rgba(20,35,60,.03),0 10px 30px -18px rgba(20,35,60,.28)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--bg:#0c0e18;--card:#171a28;--tx:#f3f2fa;--mu:#a3a6bb;--rule:#23263a;--bd:#2b2e44;--ac:#f3f2fa;--on-ac:#14233c;--coral:#ff5a4c;--vio:#a48bff;--fab:#f3f2fa;--on-fab:#14233c;
+--blue:#8ea2ff;--amber:#f2a93b;--green:#3fd492;--slate:#6f7388;--sh:0 0 0 1px #23263a}}
+:root[data-theme=dark]{--bg:#0c0e18;--card:#171a28;--tx:#f3f2fa;--mu:#a3a6bb;--rule:#23263a;--bd:#2b2e44;--ac:#f3f2fa;--on-ac:#14233c;--coral:#ff5a4c;--vio:#a48bff;--fab:#f3f2fa;--on-fab:#14233c;--blue:#8ea2ff;--amber:#f2a93b;--green:#3fd492;--slate:#6f7388;--sh:0 0 0 1px #23263a}
+.c{border-radius:26px;padding:18px;box-shadow:var(--sh)}.c .c{box-shadow:none}
+h1.lt{font-size:30px;font-weight:800;letter-spacing:-.4px;margin:22px 4px 14px}
+h3{font-size:17px;font-weight:800}
+#app[data-p=dash]>h1.lt{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+#app[data-p=dash]{padding-top:14px}
+#fab{background:var(--fab);color:var(--on-fab);box-shadow:0 14px 28px -12px rgba(20,35,60,.6)}
+nav{background:var(--card);border-top:0;box-shadow:0 -8px 24px -18px rgba(20,35,60,.35);border-radius:22px 22px 0 0}
+nav .ind{background:color-mix(in srgb,var(--coral) 14%,transparent)}nav button.on{color:var(--tx)}nav button.on svg{color:var(--coral)}
+.bar i{background:var(--vio)}.chart .bk path,.chart.focus .bk.hl path{fill:var(--vio)}
+/* hero: Monzo-style coral card, huge figure */
+@keyframes rise{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:none}}
+.hero{background:var(--coral);color:#fff;border-radius:30px;padding:20px 22px 18px;margin:0 0 16px;box-shadow:0 22px 40px -22px rgba(255,90,76,.9);animation:rise .6s cubic-bezier(.2,.9,.2,1) backwards;overflow:hidden;position:relative}
+.hero::after{content:"";position:absolute;width:220px;height:220px;border-radius:50%;background:rgba(255,255,255,.1);top:-90px;left:-70px;pointer-events:none}
+.hero>*{position:relative}
+.hd{font-size:13px;font-weight:600;color:rgba(255,255,255,.85);margin-bottom:14px}
+.hero .k{color:#fff;font-weight:700;font-size:14px}
+.hero .hv{font-size:46px;letter-spacing:-1.2px;line-height:1.1;margin:4px 0 8px;color:#fff}.hero .hv small{color:rgba(255,255,255,.85);font-size:15px}
+.gain{display:inline-block;background:#fff;color:#a8261b;border-radius:999px;padding:3px 12px;font-size:13px;font-weight:700;margin-bottom:14px}
+.hero .bar{height:9px;background:rgba(255,255,255,.3)}.hero .bar i{background:#fff}.hero .mt s{background:var(--coral)}
+.hero .hp{color:rgba(255,255,255,.9)}.hero .hp b{color:#fff}
+/* quick actions: round tiles with labels */
+.qa{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 6px}
+.qa button{all:unset;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;font-size:12px;font-weight:700;color:var(--tx);text-align:center;-webkit-tap-highlight-color:transparent;animation:rise .5s cubic-bezier(.2,.9,.2,1) backwards}
+.qa button:nth-child(2){animation-delay:.05s}.qa button:nth-child(3){animation-delay:.1s}.qa button:nth-child(4){animation-delay:.15s}
+.qa i{width:56px;height:56px;border-radius:20px;background:var(--card);box-shadow:var(--sh);display:grid;place-items:center;transition:transform .15s cubic-bezier(.23,1,.32,1)}
+.qa button:first-child i{background:var(--tx);color:var(--card)}
+.qa button:active i{transform:scale(.92)}.qa button:focus-visible i{outline:2px solid var(--vio);outline-offset:2px}
+.qa svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+/* savings chart: violet line draws itself, soft fill */
+@keyframes drawl{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+.spark{display:block;width:100%;height:130px;margin-top:4px}
+.spl{fill:none;stroke:var(--vio);stroke-width:2.5;stroke-linejoin:round;vector-effect:non-scaling-stroke;stroke-dasharray:1;animation:drawl 1.2s .2s cubic-bezier(.65,0,.35,1) backwards}
+.spa{fill:url(#spg)}
+.spx{display:flex;justify-content:space-between;font-size:12px;color:var(--mu);margin-top:4px;direction:ltr}
+.bund .c3{margin:-8px -10px -6px}
+/* where the money is: thicker pastel bar with gaps */
+.flow{height:14px;gap:4px;background:transparent}.flow i{border-radius:999px}
+.dot{border-radius:50%}
+/* lists: Monzo transaction rows, round avatar with the day number */
+.rowlink{gap:12px;justify-content:flex-start;min-height:60px}
+.ric{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-weight:800;font-size:16px;background:color-mix(in srgb,var(--t) 15%,transparent);color:color-mix(in srgb,var(--t) 80%,var(--tx))}
+.rm{flex:1;min-width:0;display:flex;flex-direction:column}.rm b{font-size:15px}.rm small{font-size:12px}
+.ra{display:flex;flex-direction:column;align-items:flex-end;gap:3px}[dir=rtl] .ra{align-items:flex-start}.ra b{font-size:16px;font-variant-numeric:tabular-nums}
+.more{background:var(--bg)}
+/* coloured summary card on the payback page */
+.gcard{color:#fff;border-radius:28px;padding:20px 22px}.gcard .k,.gcard small{color:rgba(255,255,255,.9)}.gcard .hv2{font-size:36px;color:#fff}
+.gcard .bar{height:8px;background:rgba(255,255,255,.3);margin:12px 0 8px}.gcard .bar i{background:#fff}
+.gpay{background:var(--coral);box-shadow:0 18px 34px -20px rgba(255,90,76,.9)}
+.wdc .hv2{font-size:30px}
+.note{border-radius:22px;box-shadow:none}
+@media(prefers-reduced-motion:reduce){.hero,.qa button,.spl{animation:none}}
+/* ===== same mood on every tab ===== */
+:root{--navy:#14233c;--vio-d:#6a46f5;--orange:#e8590c;--blue-d:#2f5bd8;--teal:#0b8466;--indigo:#4a3bd0;--violet:var(--vio)}
+@media(prefers-color-scheme:dark){:root:not([data-theme=light]){--navy:#2a3b63}}:root[data-theme=dark]{--navy:#2a3b63}
+.hero{background:var(--hc,var(--coral));box-shadow:0 22px 40px -24px color-mix(in srgb,var(--hc,var(--coral)) 85%,transparent)}
+.hero .mt s{background:var(--hc,var(--coral))}
+.ph{margin-top:2px}.ph .hv{font-size:40px}.ph .hp{display:flex;flex-wrap:wrap;gap:4px 14px}
+.mnav{display:flex;align-items:center;gap:8px;margin-bottom:14px}.mnav b{flex:1;text-align:center;font-size:17px;direction:ltr}
+.mnav button{background:rgba(255,255,255,.2);color:#fff;min-height:36px;padding:0 14px;font-size:13px}
+.gcard{animation:rise .6s cubic-bezier(.2,.9,.2,1) backwards;position:relative;overflow:hidden}.gcard::after{content:"";position:absolute;width:200px;height:200px;border-radius:50%;background:rgba(255,255,255,.1);top:-90px;left:-70px;pointer-events:none}.gcard>*{position:relative}
+/* cards rise in one after another */
+#app.anim>.c,#app.anim>.g,#app.anim>.mh{animation:rise .45s cubic-bezier(.2,.9,.2,1) both}
+#app.anim>:nth-child(3){animation-delay:.04s}#app.anim>:nth-child(4){animation-delay:.08s}#app.anim>:nth-child(5){animation-delay:.12s}#app.anim>:nth-child(n+6){animation-delay:.16s}
+/* controls: soft violet secondary, navy primary, roomy fields */
+button{background:color-mix(in srgb,var(--vio) 11%,transparent);color:color-mix(in srgb,var(--vio) 70%,var(--tx))}
+button.p{background:var(--ac);color:var(--on-ac)}button.on{background:var(--tx);color:var(--card)}
+.seg{background:color-mix(in srgb,var(--tx) 6%,transparent)}.seg button{color:var(--mu)}.seg button.on{background:var(--card);color:var(--tx)}
+@media(hover:hover) and (pointer:fine){button:not(.on):not(.p):hover{background:color-mix(in srgb,var(--vio) 18%,transparent)}}
+input,select,textarea{border-radius:14px;border:1px solid transparent;transition:border-color .15s,background .15s}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--vio);background:var(--card)}
+input[type=checkbox]{accent-color:var(--vio)}
+.fl{color:var(--mu)}
+summary{display:inline-flex;align-items:center;gap:4px;font-size:13px;color:color-mix(in srgb,var(--vio) 70%,var(--tx));padding:6px 0}
+/* lists of days everywhere share the round day-number avatar */
+.dr{gap:10px}.dr .ric{width:40px;height:40px;font-size:15px}.day details{margin-inline-start:84px}
+.day.sel{--rowbg:color-mix(in srgb,var(--vio) 9%,var(--card))}
+.mh{margin:24px 6px 8px}.mh>b{font-size:18px;font-weight:800;direction:ltr}
+.list{padding:6px 16px}
+/* withdrawal cards */
+.wdh{align-items:center;flex-wrap:nowrap}.wdh h3{flex:1}.wdh .ric{width:40px;height:40px}
+.wdc .hv2{margin:6px 0 2px}.wdc table{margin:10px 0 6px}.wdc td:last-child{text-align:left;font-weight:700}
+/* report tiles: pastel colour by meaning */
+#app .g .c.tile{background:color-mix(in srgb,var(--t) 11%,var(--card));box-shadow:none}
+#app .g .c.tile .k{color:color-mix(in srgb,var(--t) 55%,var(--tx))}#app .g .c.tile .v{color:color-mix(in srgb,var(--t) 70%,var(--tx))}
+/* tables */
+th{font-weight:600}td{padding:10px 6px}
+.tw{border-radius:16px}
 
 /* website: sign-in screen (own class name: the app already uses .lg for chart legends) */
 .sgn{position:fixed;inset:0;z-index:60;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:16px}
@@ -506,6 +599,8 @@ const KEEPPH={rate_v:1,wa:1};
 function labelFor(e){const id=e.id||'';if(LBL[id])return LBL[id];if(/^rd_/.test(id))return'از تاریخ';if(/^rv_/.test(id))return'مقدار جدید';if(/^dd\d/.test(id))return'تاریخ واریز';if(/^dr\d/.test(id))return'مبلغ واقعی دریافتی ($)';if(/^wf_/.test(id))return RN[id.slice(3)].split(' (')[0];return''}
 function fieldLabels(){app.querySelectorAll('input:not([type=checkbox]),select').forEach(e=>{if(e.closest('label,td,.dr')||e.id=='q')return;const t=labelFor(e);if(!t)return;const l=document.createElement('label');l.className='fl';const s=document.createElement('span');s.textContent=t;e.replaceWith(l);l.append(s,e);if(!KEEPPH[e.id]&&!/^wf_/.test(e.id))e.placeholder='';e.removeAttribute('aria-label')})}
 function a11y(){fieldLabels();app.querySelectorAll('input,textarea,select').forEach(e=>{if(e.type!='checkbox'&&!e.closest('label')&&!e.getAttribute('aria-label'))e.setAttribute('aria-label',e.placeholder||(e.type=='date'?'تاریخ':'مقدار'));if(e.type!='checkbox'&&e.type!='date')e.setAttribute('autocomplete','off')});app.querySelectorAll('button:not([aria-label])').forEach(b=>{const s=b.textContent.trim();if(SYM[s])b.setAttribute('aria-label',SYM[s])})}
+// page hero: every tab opens with one coloured summary card in the home card's style (display only)
+const ph=(c,k,v,sub,top='')=>`<section class="hero ph" style="--hc:${c}">${top}<div class="k">${k}</div><div class="hv"><span dir="ltr">${v}</span></div>${sub?`<div class="hp">${sub}</div>`:''}</section>`;
 const dl=()=>`<datalist id="nl">${Object.keys(S.students).map(n=>`<option value="${E(n)}">`).join('')}</datalist>`;
 const V={
 dash(){return rems()+V.dash0()+toman()+extra()},
@@ -516,13 +611,23 @@ const flow=P=>{const tot=P.reduce((a,p)=>a+Math.max(0,p[2]),0)||1;return`<div cl
 const track=(l,v,tone)=>{const p=Math.min(100,v/S.goal*100),nx=[25,50,75,100].find(x=>p<x);return`<div class="tr" style="--t:var(--${tone})"><div class="trh"><b>${l}</b><span><b>${m(v)}</b> <small>${$$(p)}٪</small></span></div><div class="bar mt"><i style="width:0" data-w="${p}"></i>${[25,50,75].map(x=>`<s style="inset-inline-start:${x}%"></s>`).join('')}</div><small>${nx?`تا نقطه عطف ${nx}٪ فقط <b>${m(R(S.goal*nx/100-v))}</b> مانده`:'🏆 به هدف رسیدی!'}</small></div>`};
 const cell=(k,v,tone)=>`<div class="c tile" style="--t:var(--${tone})"><div class="k">${k}</div><div class="v">${m(v)}</div></div>`;
 const nx=[25,50,75,100].find(x=>pc<x),rec=S.incomes.slice().sort((a,b)=>a.d<b.d?1:-1).slice(0,5);
-return`<section class="hero"><div class="k">پس‌انداز تا امروز · کل کاری که انجام داده‌ام</div>${c3Slot(t.sv)}<div class="hrow"><div class="hv"><span dir="ltr">${m(t.sv)}</span><small> از <span dir="ltr">${m(S.goal)}</span></small></div></div>
+// savings over time: running total of each day's final amount plus goal-log entries, by date (display only, same sums as totals().sv)
+const ev={};S.incomes.forEach(i=>ev[i.d]=(ev[i.d]||0)+(i.chk!=null?i.chk:i.net));S.goalLog.forEach(g=>{const d=g.d||'';ev[d]=(ev[d]||0)+g.amt});
+const ds=Object.keys(ev).sort();let run=0;const pts=ds.map(d=>run+=ev[d]),mo=today().slice(0,7)+'-01',gain=R(ds.filter(d=>d>=mo).reduce((a,d)=>a+ev[d],0));
+const spark=()=>{if(pts.length<2)return'<small>بعد از ثبت چند روز، نمودار اینجا کشیده می‌شود.</small>';const mx=Math.max(...pts)||1,W=320,H=120,X=k=>(k/(pts.length-1)*W).toFixed(1),Y=v=>(H-4-Math.max(0,v)/mx*(H-14)).toFixed(1),line=pts.map((v,k)=>(k?'L':'M')+X(k)+' '+Y(v)).join(' ');
+return`<svg class="spark" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="spg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" style="stop-color:var(--vio);stop-opacity:.32"/><stop offset="1" style="stop-color:var(--vio);stop-opacity:0"/></linearGradient></defs><path class="spa" d="${line} L${W} ${H} L0 ${H}Z"/><path class="spl" d="${line}" pathLength="1"/></svg><div class="spx"><span>${ds[0]||''}</span><span>امروز</span></div>`};
+const qa=(f,ic,l)=>`<button onclick="${f}"><i aria-hidden="true"><svg viewBox="0 0 24 24">${ic}</svg></i>${l}</button>`;
+return`<section class="hero"><div class="hd">${wk(today())} · <span dir="ltr">${today()}</span></div><div class="k">پس‌انداز تا امروز · کل کاری که انجام داده‌ام</div><div class="hv"><span dir="ltr">${m(t.sv)}</span><small> از <span dir="ltr">${m(S.goal)}</span></small></div>${gain>0?`<div class="gain"><span dir="ltr">+${m(gain)}</span> این ماه</div>`:''}
 <div class="bar mt"><i style="width:0" data-w="${pc}"></i>${[25,50,75].map(x=>`<s style="inset-inline-start:${x}%"></s>`).join('')}</div>
 <div class="hp"><span><b>${$$(pc)}٪</b> · ${m(Math.max(0,S.goal-t.sv))} مانده</span><span>${nx?`تا ${nx}٪: <b>${m(R(S.goal*nx/100-t.sv))}</b>`:'🏆 به هدف رسیدی'}</span></div></section>
+<div class="qa">${qa('goNew()','<path d="M12 5v14M5 12h14"/>','روز جدید')}${qa("go('wd')",'<path d="M7 17 17 7M9 7h8v8"/>','برداشت')}${qa("go('set')",'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>','هدف')}${qa("go('rep')",'<path d="M3 3v18h18"/><path d="M8 17v-5M13 17V8M18 17v-3"/>','گزارش')}</div>
+<div class="c"><div class="ch"><h3>روند پس‌انداز</h3><span class="k">${S.incomes.length} روز کار</span></div>${spark()}</div>
+<div class="c bund"><div class="ch"><h3>بسته‌های هدف</h3><span class="k">هر بسته <span dir="ltr">${m(S.goal/10)}</span></span></div>${c3Slot(t.sv)}</div>
 <div class="c"><div class="ch"><h3>پول‌هایت الان کجاست؟</h3><span class="k">کل درآمد نهایی (${S.incomes.length} روز) <b>${m(t.net)}</b></span></div>${flow([['blue','باقی در Wallet',t.wal],['amber','نزد صراف (در انتظار)',t.pend],['green','واریز واقعی به حسابم',t.rec],['slate','کارمزد/اختلاف برداشت‌ها',t.wd-t.pend-t.rec]])}<div class="lg"><span>برداشت‌شده</span><b>${m(t.wd)}</b></div></div>
 <div class="c">${track('واریزشده به حسابم',t.rec,'green')}</div>
-${rec.length?`<div class="c"><div class="ch"><h3>آخرین روزها</h3></div>${rec.map(i=>{const w=wOf(i);return`<div class="rowlink"><span>${i.d} ${wk(i.d)}<br><span class="pill ${!w?'pw':w.dd?'pd':'pe'}">${!w?'در Wallet':w.dd?'واریز شد':'نزد صراف'}</span></span><b>${m(fin(i))}</b></div>`}).join('')}<button class="more" onclick="go('cls')">همه ${S.incomes.length} روز</button></div>`:''}`},
-cls(){let h=`<div class="c"><h3>ثبت روز کاری</h3><div class="r seg"><button class="${mode=='list'?'on':''}" onclick="mode='list';P=null;draw()">با لیست دانش‌آموزان</button><button class="${mode=='old'?'on':''}" onclick="mode='old';P=null;draw()">روز قدیمی (فقط مبلغ)</button></div>`;
+${rec.length?`<div class="c"><div class="ch"><h3>آخرین روزها</h3></div>${rec.map(i=>{const w=wOf(i);const s=!w?'pw':w.dd?'pd':'pe';return`<div class="rowlink"><i class="ric ${s}" aria-hidden="true">${+i.d.slice(8)}</i><span class="rm"><b>${wk(i.d)}</b><small>${i.d}</small></span><span class="ra"><b>${m(fin(i))}</b><span class="pill ${s}">${!w?'در Wallet':w.dd?'واریز شد':'نزد صراف'}</span></span></div>`}).join('')}<button class="more" onclick="go('cls')">همه ${S.incomes.length} روز</button></div>`:''}`},
+cls(){const mo0=today().slice(0,7),inM=S.incomes.filter(i=>i.d.startsWith(mo0)),onW=S.incomes.filter(i=>!i.wid).length;
+let h=ph('var(--navy)','مجموع نهایی همهٔ روزها',m(totals().fin),`<span>${S.incomes.length} روز کار · ${onW} روز در Wallet</span><span>این ماه <b>${m(R(inM.reduce((a,i)=>a+fin(i),0)))}</b></span>`)+`<div class="c"><h3>ثبت روز کاری</h3><div class="r seg"><button class="${mode=='list'?'on':''}" onclick="mode='list';P=null;draw()">با لیست دانش‌آموزان</button><button class="${mode=='old'?'on':''}" onclick="mode='old';P=null;draw()">روز قدیمی (فقط مبلغ)</button></div>`;
 if(mode=='old')h+=`<div class="r"><input type="date" id="cd" value="${today()}" onchange="chd(this.value)"><b id="wkl">${wk(today())}</b><button onclick="setD(0)">امروز</button><button onclick="setD(-1)">دیروز</button><input id="og" placeholder="مبلغ کل درآمد ناخالص $" inputmode="decimal"></div><div class="r"><label><input type="checkbox" id="onet"> این مبلغ نهایی است (هیچ کسری اعمال نشود)</label></div><button class="p" onclick="addOld()">ثبت</button></div>`;
 else{h+=`<div class="r"><input type="date" id="cd" value="${P?P.d:today()}" onchange="chd(this.value)"><b id="wkl">${wk(P?P.d:today())}</b><button onclick="setD(0)">امروز</button><button onclick="setD(-1)">دیروز</button></div><textarea id="ct" placeholder="برنامه کلاس‌ها را اینجا پیست کنید...">${P?E(P.text):''}</textarea><div class="r"><button class="p" onclick="analyze()">تحلیل</button><button onclick="pasteCb()">📋 پیست از کلیپ‌بورد و تحلیل</button></div></div>`+dl();
 if(P){const rows=P.items.map((i,x)=>`<tr><td><input list="nl" value="${E(i.n)}" size="9" onchange="rn(${x},this.value)"></td><td><input value="${i.c}" size="3" inputmode="decimal" onchange="rc(${x},this.value)"></td><td>${i.p==null?`<span class="bad">❌ قیمت ندارد</span><input size="4" id="pp${x}" placeholder="$" inputmode="decimal">`:m(i.p)+' ← '+m(R(i.c*i.p))}</td><td><button onclick="P.items.splice(${x},1);draw()">✖</button></td></tr>`).join('');
@@ -538,16 +643,16 @@ h+=`<div class="c"><h3>روزهای ثبت‌شده</h3><p><b>${L.length} روز
 <div class="r"><input type="date" id="bdt" value="${today()}"><input id="wa" size="9" placeholder="مبلغ (خالی=کل)" inputmode="decimal"><button class="p" onclick="mkWd()">ثبت برداشت</button><button onclick="unWd()">برگشت به Wallet</button></div></div>`;
 // days grouped by month; each row: select, date + status, final amount; edit/delete live in the row's details
 const GM={};L.forEach(i=>(GM[i.d.slice(0,7)]=GM[i.d.slice(0,7)]||[]).push(i));
-h+=Object.entries(GM).map(([mo,arr])=>`<div class="mh"><b>${mo}</b><span>${arr.length} روز · <b>${m(R(arr.reduce((a,i)=>a+fin(i),0)))}</b></span></div><div class="c list">`+arr.map(i=>{const w=wOf(i),st=!w?'در Wallet':w.dd?`✅ واریز شد (برداشت ${S.wds.indexOf(w)+1})`:`نزد صراف (برداشت ${S.wds.indexOf(w)+1})`;
-return`<div class="day${sel.has(i.id)?' sel':''}${OPEN==i.id?' open':''}" data-id="${i.id}"><div class="swp"><div class="sw-act"><button class="sw-e" onclick="ED=${i.id};OPEN=0;draw()">✏️ ویرایش</button><button class="sw-d" onclick="OPEN=${i.id};delI(${i.id})">${D=='i'+i.id?'مطمئنی؟ ✓':'🗑 حذف'}</button></div><div class="dr"><input type="checkbox" aria-label="انتخاب ${i.d}" ${sel.has(i.id)?'checked':''} onchange="tg(${i.id})"><div class="dm"><b>${i.d} ${wk(i.d)}</b><div class="ds"><span class="pill ${!w?'pw':w.dd?'pd':'pe'}">${st}</span>${i.old?'<small>قدیمی</small>':''}${DC[i.d]>1?'<span class="bad">⚠️ تاریخ تکراری</span>':''}</div></div><div class="da">${i.chk!=null?`<b class="ok">${m(i.chk)}</b>`:`<b>${m(i.net)}</b>`}<small>ناخالص ${m(i.gross)}</small></div></div></div>${ED==i.id?edit(i):''}<details${D=='i'+i.id?' open':''}><summary>جزئیات</summary>${i.chk!=null?`<small>نهایی ${m(i.chk)}${tmn(i.chk)}${rv('daily',i.d)?` · قبل از کسر پول روزانه: ${m(i.pre!=null?i.pre:i.net)}`:''}</small>`:`<small>خالص ${m(i.net)}</small>`}${ded(i.ded||[])}${(i.items||[]).map(x=>`<small>${E(x.n)} × ${x.c}</small>`).join('<br>')}${(i.hist||[]).map(h=>`<br><small>🕘 ${h.at}: ${h.d}، ناخالص ${m(h.gross)}، نهایی ${m(h.chk!=null?h.chk:h.net)}</small>`).join('')}<div class="r"><button aria-label="ویرایش روز" onclick="ED=${i.id};draw()">✏️ ویرایش</button><button aria-label="حذف روز" onclick="delI(${i.id})">${D=='i'+i.id?'مطمئنی؟ ✓':'🗑 حذف'}</button></div></details></div>`}).join('')+'</div>').join('');return h},
-wd(){return`<div class="c"><small>برای ثبت برداشت، در «روزهای کار» روزها را انتخاب کنید.</small></div>`+(S.wds.slice().reverse().map(w=>{const L=S.incomes.filter(i=>i.wid==w.id),k=S.wds.indexOf(w)+1,sm=R(L.reduce((a,i)=>a+i.net,0));
-return`<div class="c wdc"><div class="ch"><h3>برداشت ${k}</h3><span class="pill ${w.dd?'pd':'pe'}">${w.dd?'واریز شد':'نزد صراف'}</span></div><div class="hv2">${m(w.amt)}</div><div class="k">${w.d} ${wk(w.d)} · جمع روزها ${m(sm)}${tmn(w.amt)}${w.amt<sm?` · مانده در Wallet ${m(sm-w.amt)}`:''}</div>
+h+=Object.entries(GM).map(([mo,arr])=>`<div class="mh"><b dir="ltr">${mo}</b><span>${arr.length} روز · <b>${m(R(arr.reduce((a,i)=>a+fin(i),0)))}</b></span></div><div class="c list">`+arr.map(i=>{const w=wOf(i),st=!w?'در Wallet':w.dd?`✅ واریز شد (برداشت ${S.wds.indexOf(w)+1})`:`نزد صراف (برداشت ${S.wds.indexOf(w)+1})`;
+return`<div class="day${sel.has(i.id)?' sel':''}${OPEN==i.id?' open':''}" data-id="${i.id}"><div class="swp"><div class="sw-act"><button class="sw-e" onclick="ED=${i.id};OPEN=0;draw()">✏️ ویرایش</button><button class="sw-d" onclick="OPEN=${i.id};delI(${i.id})">${D=='i'+i.id?'مطمئنی؟ ✓':'🗑 حذف'}</button></div><div class="dr"><input type="checkbox" aria-label="انتخاب ${i.d}" ${sel.has(i.id)?'checked':''} onchange="tg(${i.id})"><i class="ric ${!w?'pw':w.dd?'pd':'pe'}" aria-hidden="true">${+i.d.slice(8)}</i><div class="dm"><b>${wk(i.d)} <span dir="ltr">${i.d}</span></b><div class="ds"><span class="pill ${!w?'pw':w.dd?'pd':'pe'}">${st}</span>${i.old?'<small>قدیمی</small>':''}${DC[i.d]>1?'<span class="bad">⚠️ تاریخ تکراری</span>':''}</div></div><div class="da">${i.chk!=null?`<b class="ok">${m(i.chk)}</b>`:`<b>${m(i.net)}</b>`}<small>ناخالص ${m(i.gross)}</small></div></div></div>${ED==i.id?edit(i):''}<details${D=='i'+i.id?' open':''}><summary>جزئیات</summary>${i.chk!=null?`<small>نهایی ${m(i.chk)}${tmn(i.chk)}${rv('daily',i.d)?` · قبل از کسر پول روزانه: ${m(i.pre!=null?i.pre:i.net)}`:''}</small>`:`<small>خالص ${m(i.net)}</small>`}${ded(i.ded||[])}${(i.items||[]).map(x=>`<small>${E(x.n)} × ${x.c}</small>`).join('<br>')}${(i.hist||[]).map(h=>`<br><small>🕘 ${h.at}: ${h.d}، ناخالص ${m(h.gross)}، نهایی ${m(h.chk!=null?h.chk:h.net)}</small>`).join('')}<div class="r"><button aria-label="ویرایش روز" onclick="ED=${i.id};draw()">✏️ ویرایش</button><button aria-label="حذف روز" onclick="delI(${i.id})">${D=='i'+i.id?'مطمئنی؟ ✓':'🗑 حذف'}</button></div></details></div>`}).join('')+'</div>').join('');return h},
+wd(){const t=totals();return ph('var(--vio-d)','نزد صراف (در انتظار)',m(t.pend),`<span>واریزشده <b>${m(t.rec)}</b></span><span>${S.wds.length} برداشت</span>`)+`<div class="c"><small>برای ثبت برداشت، در «روزهای کار» روزها را انتخاب کنید.</small></div>`+(S.wds.slice().reverse().map(w=>{const L=S.incomes.filter(i=>i.wid==w.id),k=S.wds.indexOf(w)+1,sm=R(L.reduce((a,i)=>a+i.net,0));
+return`<div class="c wdc"><div class="ch wdh"><i class="ric ${w.dd?'pd':'pe'}" aria-hidden="true">${k}</i><h3>برداشت ${k}</h3><span class="pill ${w.dd?'pd':'pe'}">${w.dd?'واریز شد':'نزد صراف'}</span></div><div class="hv2">${m(w.amt)}</div><div class="k">${w.d} ${wk(w.d)} · جمع روزها ${m(sm)}${tmn(w.amt)}${w.amt<sm?` · مانده در Wallet ${m(sm-w.amt)}`:''}</div>
 <div class="tw"><table>${L.map(i=>`<tr><td>${i.d} ${wk(i.d)}</td><td>${m(i.net)}</td></tr>`).join('')}</table></div>
 ${w.dd?`<p class="ok">✅ واریز ${w.dd} ${wk(w.dd)}: ${m(w.rec)} واقعی ${w.amt!=w.rec?`<span class="bad">(اختلاف ${m(w.amt-w.rec)})</span>`:''}</p><button onclick="undep(${w.id})">برگشت واریز</button>`:`<div class="r"><input type="date" id="dd${w.id}" value="${today()}"><input id="dr${w.id}" size="8" placeholder="مبلغ واقعی دریافتی" value="${w.amt}" inputmode="decimal"><button class="p" onclick="dep(${w.id})">واریز شد</button></div>`}
 <button onclick="delW(${w.id})">${D=='w'+w.id?'مطمئنی؟ ✓':'🗑 حذف برداشت'}</button></div>`}).join('')||'<div class="c mu">هنوز برداشتی ثبت نشده.</div>')},
-stu(){return`<div class="c"><h3>فهرست دانش‌آموزان</h3><textarea id="st" placeholder="هر خط: نام  قیمت&#10;Ali 12"></textarea><div class="r"><label>اعمال از <input type="date" id="sd" value="${today()}"></label><button class="p" onclick="addStu()">افزودن / به‌روزرسانی</button></div><small>تغییر قیمت فقط از تاریخ انتخابی اعمال می‌شود.</small></div>
+stu(){const ns=Object.keys(S.students),ps=ns.map(n=>price(n,today())).filter(p=>p!=null);return ph('var(--orange)','دانش‌آموزان',ns.length,ps.length?`<span>میانگین قیمت امروز <b>${m(R(ps.reduce((a,p)=>a+p,0)/ps.length))}</b></span>`:'')+`<div class="c"><h3>فهرست دانش‌آموزان</h3><textarea id="st" placeholder="هر خط: نام  قیمت&#10;Ali 12"></textarea><div class="r"><label>اعمال از <input type="date" id="sd" value="${today()}"></label><button class="p" onclick="addStu()">افزودن / به‌روزرسانی</button></div><small>تغییر قیمت فقط از تاریخ انتخابی اعمال می‌شود.</small></div>
 <div class="c"><input id="q" placeholder="جست‌وجو" oninput="flt()"><div id="sl" class="tw">${stuTable(Object.keys(S.students).sort())}</div></div>`},
-set(){return`<div class="c"><h3>هدف و تعدیل دستی</h3><div class="r"><label>هدف $ <input id="gl" value="${S.goal}" size="7" inputmode="decimal"></label><button onclick="S.goal=num(gl.value)||S.goal;save();draw()">ثبت</button></div>
+set(){const t=totals();return ph('var(--blue-d)','هدف پس‌انداز',m(S.goal),`<span>پس‌انداز تا امروز <b>${m(t.sv)}</b></span><span><b>${$$(Math.min(100,t.sv/S.goal*100))}٪</b></span>`)+`<div class="c"><h3>هدف و تعدیل دستی</h3><div class="r"><label>هدف $ <input id="gl" value="${S.goal}" size="7" inputmode="decimal"></label><button onclick="S.goal=num(gl.value)||S.goal;save();draw()">ثبت</button></div>
 <div class="r"><input type="date" id="gd" value="${today()}"><input id="ga" size="7" placeholder="مبلغ $" inputmode="decimal"><input id="gn" size="8" placeholder="توضیح"><button class="p" onclick="addG()">افزودن</button></div>
 <table>${S.goalLog.slice().reverse().map(g=>`<tr><td>${g.d}</td><td>${m(g.amt)}</td><td>${E(g.n||'')}</td><td><button onclick="delG(${g.id})">${D=='g'+g.id?'مطمئنی؟ ✓':'🗑'}</button></td></tr>`).join('')}</table></div>
 <div class="c"><h3>کسورات</h3><small>تغییر فقط از «تاریخ شروع» به بعد اعمال می‌شود.</small>${Object.keys(RN).map(k=>`<div class="r"><b>${RN[k]}</b></div><div class="mu">${S.rules[k].map((x,j)=>`از ${x.from==DEF?'ابتدا':x.from}: <b>${x.v}</b>${x.from==DEF?'':` <button class="x" aria-label="حذف این قانون" onclick="delR('${k}',${j})">✖</button>`}`).join(' ‹ ')}</div><div class="r"><input type="date" id="rd_${k}" value="${today()}"><input id="rv_${k}" size="5" placeholder="مقدار" inputmode="decimal"><button onclick="addRule('${k}')">افزودن</button></div>`).join('')}</div>
@@ -564,12 +669,12 @@ return{...x,f,p:x.amt?f/x.amt*100:0,done,on,eta,etaD:eta!=null?ld(new Date(Date.
 V.pay=()=>{const ps=payState(),{tot,paid}=ps,rp=rv('rep',today())||0,st=(S.rules.rep.filter(x=>x.v>0).at(-1)||{}).from,open=ps.boxes.filter(b=>!b.done),full=ps.boxes.filter(b=>b.done);
 const days=ps.reps.slice().reverse();
 const pace=ps.rate>0?`با سرعت فعلی: میانگین <b>${m(ps.rate)}</b> در روز (${ps.n} روز اخیر)`:'سرعت بعد از ثبت اولین روز با سهم جبران حساب می‌شود.';
-return`<div class="c"><div class="k">جبران‌شده تا امروز</div><div class="hv2">${m(paid)}</div><div class="k">از ${m(tot)} · باقی‌مانده ${m(R(tot-paid))}</div><div class="bar"><i style="width:0" data-w="${tot?paid/tot*100:0}"></i></div><small>${pace}</small></div>
+return`<div class="c gcard gpay"><div class="k">جبران‌شده تا امروز</div><div class="hv2">${m(paid)}</div><div class="k">از ${m(tot)} · باقی‌مانده ${m(R(tot-paid))}</div><div class="bar"><i style="width:0" data-w="${tot?paid/tot*100:0}"></i></div><small>${pace}</small></div>
 ${open.map(x=>`<div class="c"><div class="ch"><h3>${E(x.n)}</h3></div><div class="bar"><i style="width:0" data-w="${x.p}"></i></div><div class="g"><div><div class="k">جبران‌شده</div><div class="v ok">${m(x.f)}</div><small>${$$(x.p)}٪</small></div><div><div class="k">باقی‌مانده</div><div class="v">${m(R(x.amt-x.f))}</div></div></div><p class="eta">${x.eta!=null?`با سرعت فعلی حدود <b>${x.eta} روز</b> دیگر پر می‌شود؛ ${wk(x.etaD)} <span dir="ltr">${x.etaD}</span>`:'زمان پر شدن بعد از ثبت اولین روز با سهم جبران معلوم می‌شود.'}</p><div class="r"><input id="db_${x.id}" size="6" value="${x.amt}" inputmode="decimal" aria-label="مبلغ ${E(x.n)} ($)"><button onclick="setDebt(${x.id})">ثبت مبلغ</button></div></div>`).join('')}
 ${full.length?`<div class="c"><h3>پر شده‌ها</h3>${full.map(x=>`<div class="r"><span class="pill pd">پر شد</span><b style="flex:1">${E(x.n)}</b><span>${m(x.amt)}</span></div>${x.on?`<small>پر شد در ${wk(x.on)} <span dir="ltr">${x.on}</span></small>`:''}`).join('')}</div>`:''}
 <div class="c"><h3>سهم هر روز</h3><p>${rp?`<b>${rp}٪</b> از مانده بعد از کسر اضطراری${st?` (از ${st})`:''} به این کادرها می‌رود و از مبلغ نهایی روز کم می‌شود.`:'الان سهمی کنار گذاشته نمی‌شود.'} وقتی هر دو کادر پر شوند، کسر خودکار قطع می‌شود.</p><div class="r"><input type="date" id="rd_rep" value="${today()}"><input id="rv_rep" size="5" placeholder="٪" inputmode="decimal"><button onclick="addRule('rep')">تغییر درصد</button></div></div>
 ${(()=>{const f=payFlow();return`<div class="c"><h3>پول جبران کجاست</h3><div class="g"><div><div class="k">در Wallet</div><div class="v">${m(f.wal)}</div></div><div><div class="k">نزد صراف</div><div class="v">${m(f.exch)}</div></div><div><div class="k">واریز شد</div><div class="v ok">${m(f.dep)}</div></div></div></div>`})()}
-<div class="c list"><h3>روزهایی که سهم داشتند</h3>${days.length?days.map(i=>{const w=wOf(i),n=w?S.wds.indexOf(w)+1:0;return`<div class="day"><div class="dr pr"><div class="dm"><b>${wk(i.d)} <span dir="ltr">${i.d}</span></b><div class="ds"><span class="pill ${!w?'pw':w.dd?'pd':'pe'}">${!w?'در Wallet':w.dd?'واریز شد':'نزد صراف'}</span>${w?`<small>برداشت ${n}: ${wk(w.d)} <span dir="ltr">${w.d}</span>${w.dd?` · واریز: ${wk(w.dd)} <span dir="ltr">${w.dd}</span>`:''}</small>`:''}</div></div><div class="da"><b class="ok">${m(i.rep)}</b></div></div></div>`}).join(''):'<div class="mu">هنوز روزی ثبت نشده؛ از روز بعدی که ثبت کنید، سهمش اینجا می‌آید.</div>'}</div>`};
+<div class="c list"><h3>روزهایی که سهم داشتند</h3>${days.length?days.map(i=>{const w=wOf(i),n=w?S.wds.indexOf(w)+1:0;return`<div class="day"><div class="dr pr"><i class="ric ${!w?'pw':w.dd?'pd':'pe'}" aria-hidden="true">${+i.d.slice(8)}</i><div class="dm"><b>${wk(i.d)} <span dir="ltr">${i.d}</span></b><div class="ds"><span class="pill ${!w?'pw':w.dd?'pd':'pe'}">${!w?'در Wallet':w.dd?'واریز شد':'نزد صراف'}</span>${w?`<small>برداشت ${n}: ${wk(w.d)} <span dir="ltr">${w.d}</span>${w.dd?` · واریز: ${wk(w.dd)} <span dir="ltr">${w.dd}</span>`:''}</small>`:''}</div></div><div class="da"><b class="ok">${m(i.rep)}</b></div></div></div>`}).join(''):'<div class="mu">هنوز روزی ثبت نشده؛ از روز بعدی که ثبت کنید، سهمش اینجا می‌آید.</div>'}</div>`};
 // where the payback money is: a day's share simply follows that day's withdrawal (same dates); withdrawal and deposit
 // amounts stay the savings part only — the user keeps the payback amounts completely separate (2026-11-04)
 function payFlow(){const o={wal:0,exch:0,dep:0};S.incomes.forEach(i=>{if(!i.rep)return;const w=wOf(i),k=!w?'wal':w.dd?'dep':'exch';o[k]=R(o[k]+i.rep)});return o}
@@ -696,7 +801,7 @@ const St={};L.forEach(i=>(i.items||[]).forEach(x=>{const o=St[x.n]=St[x.n]||{c:0
 const M={};S.incomes.forEach(i=>{const k=i.d.slice(0,7),x=M[k]=M[k]||{n:new Set(),f:0,g:0};x.n.add(i.d);x.f+=fin(i);x.g+=i.gross});
 const ks=Object.keys(M).sort().reverse(),c3=(k,v,tone)=>`<div class="c tile" style="--t:var(--${tone||'violet'})"><div class="k">${k}</div><div class="v">${v}</div></div>`;
 const txt=`گزارش ${RM}\n`+L.map(i=>`${i.d} ${wk(i.d)}: ${$$(fin(i))} (ناخالص ${$$(i.gross)})`).join('\n')+`\nجمع: ${m(tot)} | ${days} روز | میانگین ${days?m(R(tot/days)):'—'}`;
-return`<div class="c"><div class="r"><button onclick="rmv(-1)">‹ ماه قبل</button><b style="flex:1;text-align:center">${RM}</b><button onclick="rmv(1)">ماه بعد ›</button></div></div>
+return ph('var(--teal)','درآمد نهایی این ماه',m(tot),`<span>${days} روز کار</span><span>میانگین <b>${days?m(R(tot/days)):'—'}</b></span>`,`<div class="mnav"><button onclick="rmv(-1)">‹ ماه قبل</button><b>${RM}</b><button onclick="rmv(1)">ماه بعد ›</button></div>`)+`
 <div class="g">${c3('جمع درآمد نهایی',m(tot))}${c3('روزهای کاری',days,'blue')}${c3('میانگین هر روز',days?m(R(tot/days)):'—')}${c3('جمع ناخالص',m(gr),'slate')}${c3('بهترین روز',best?m(best[1])+'<br><small>'+best[0]+' '+wk(best[0])+'</small>':'—','green')}${c3('کم‌درآمدترین روز',low?m(low[1])+'<br><small>'+low[0]+' '+wk(low[0])+'</small>':'—','amber')}</div>
 <div class="c">نسبت به ماه قبل (${pk}): ${m(pv)} ← <b class="${df>=0?'ok':'bad'}">${df>=0?'▲':'▼'} ${m(Math.abs(df))}${pv?` (${$$(Math.abs(df)/pv*100)}٪)`:''}</b></div>
 ${chart('درآمد روزانه ('+RM+')',pts,{avg:1,pre:RM+'-'})}
@@ -750,7 +855,7 @@ pl.tt=gid('pl_tt').value;pl.custom=gid('pl_cu').value;PLs=gid('pl_s').value;PLe=
 gid('plr').innerHTML=plResult(pl);plSave()}
 function plAdd(){plUpd();S.plan.lines.push({c:1,p:''});plSave();draw()}
 function plDel(i){plUpd();S.plan.lines.splice(i,1);plSave();draw()}
-V.plan=()=>{const pl=S.plan;return`${dl()}<div class="c"><div class="r seg">${[['how','چقدر طول می‌کشد؟'],['date','تا تاریخ چقدر؟'],['need','چند جلسه لازم است؟']].map(([k,l])=>`<button class="${pl.mode==k?'on':''}" onclick="plUpd();S.plan.mode='${k}';plSave();draw()">${l}</button>`).join('')}</div></div>
+V.plan=()=>{const pl=S.plan;return`${dl()}${ph('var(--indigo)','تا هدف مانده',m(Math.max(0,R(S.goal-totals().sv))),'<span>حساب کن چند روز و چند جلسه لازم است</span>')}<div class="c"><div class="r seg">${[['how','چقدر طول می‌کشد؟'],['date','تا تاریخ چقدر؟'],['need','چند جلسه لازم است؟']].map(([k,l])=>`<button class="${pl.mode==k?'on':''}" onclick="plUpd();S.plan.mode='${k}';plSave();draw()">${l}</button>`).join('')}</div></div>
 <div class="c"><h3>برنامه یک روز کاری</h3>${pl.lines.map((l,i)=>`<div class="r"><input id="pl_c${i}" size="3" value="${E(l.c)}" inputmode="decimal" oninput="plUpd()"> جلسه × <input id="pl_p${i}" list="nl" size="7" value="${E(l.p)}" placeholder="قیمت یا نام" inputmode="decimal" oninput="plUpd()"> $ <button onclick="plDel(${i})">✖</button></div>`).join('')}<button onclick="plAdd()">＋ خط جدید</button><br><small>به‌جای قیمت می‌توانید نام دانش‌آموز را بنویسید تا قیمتش خودکار آید.</small></div>
 <div class="c"><h3>هدف و زمان</h3><div class="r"><select id="pl_tt" onchange="plUpd()"><option value="rem" ${pl.tt=='rem'?'selected':''}>باقی‌مانده تا هدف</option><option value="goal" ${pl.tt=='goal'?'selected':''}>کل هدف از صفر</option><option value="custom" ${pl.tt=='custom'?'selected':''}>مبلغ دلخواه</option></select><input id="pl_cu" size="7" value="${E(pl.custom)}" placeholder="مبلغ $" inputmode="decimal" oninput="plUpd()"></div>
 <div class="r"><label>شروع <input type="date" id="pl_s" value="${PLs||today()}" oninput="plUpd()" onchange="plUpd()"></label><label>پایان <input type="date" id="pl_e" value="${PLe||ld(new Date(Date.now()+90*864e5))}" oninput="plUpd()" onchange="plUpd()"></label></div>
