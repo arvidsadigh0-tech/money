@@ -780,8 +780,11 @@ async function cloudRead(){const s=await col().doc('app').get();if(!s.exists)ret
 for(let i=1;i<(h.n||1);i++){const p=await col().doc('app_'+h.st+'_'+i).get();if(!p.exists)throw 0;j+=p.data().json}cloudN=h.n||1;cloudSt=h.st||0;return{c:h,o:JSON.parse(j)}}
 async function sync(){try{if(!DB||CONFLICT)return;await cw;const r=await cloudRead(),la=S.at||0,ls=lastSync();
 if(r){const {c,o}=r,cat=o.at||c.at||0;
-// both sides changed since they last agreed → ask instead of letting a device clock decide
-if(ls>0&&la>ls&&cat>ls&&cat!==la){CONFLICT={o,cat};hyd=false;const a=document.activeElement;if(!a||!/INPUT|TEXTAREA|SELECT/.test(a.tagName))draw();return}
+// both sides changed since they last agreed → ask instead of letting a device clock decide.
+// REG-11: a device that never agreed with the cloud (ls 0) but already holds its own days must ask too — otherwise a day
+// saved before signing in on a new device looked "newer" and replaced the whole cloud copy
+const mine=S.incomes.length||S.wds.length||Object.keys(S.students).length,same=()=>JSON.stringify([S.incomes,S.wds,S.students])===JSON.stringify([o.incomes,o.wds,o.students]);
+if((ls>0&&la>ls&&cat>ls&&cat!==la)||(!ls&&mine&&cat!==la&&!same())){CONFLICT={o,cat};hyd=false;const a=document.activeElement;if(!a||!/INPUT|TEXTAREA|SELECT/.test(a.tagName))draw();return}
 if(cat>la||(cat==0&&la==0)){S=norm(o);S.at=cat;try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}setSync(cat);hyd=true;const a=document.activeElement;if(!a||!/INPUT|TEXTAREA|SELECT/.test(a.tagName))draw()}
 else{hyd=true;if(la>cat)cloudSave();else setSync(cat)}}
 else{hyd=true;if(S.incomes.length||Object.keys(S.students).length){S.at=S.at||Date.now();cloudSave()}}
