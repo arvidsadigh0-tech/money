@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="مالی"><meta name="theme-color" media="(prefers-color-scheme: light)" content="#f2f2f7"><meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000000">
-<title>🧪 آزمایشی — مدیریت درآمد و پس‌انداز</title><script>try{if(top===self&&Date.now()-(+localStorage.getItem('moneytest_seen')||0)>9e5)document.documentElement.classList.add('lk')}catch(e){}
+<title>🧪 آزمایشی — مدیریت درآمد و پس‌انداز</title><meta name="app-ver" content="1794764229"><script>try{if(top===self&&Date.now()-(+localStorage.getItem('moneytest_seen')||0)>9e5)document.documentElement.classList.add('lk')}catch(e){}
 if(false)addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));</script>
 <style>html.lk #app,html.lk nav,html.lk #fab,html.lk .toast,html.lk .succ,html.lk .cele{visibility:hidden}
 html.lk body::after{content:"در حال اتصال… اگر طول کشید، اینترنت را بررسی کنید.";position:fixed;inset:0;display:grid;place-items:center;padding:24px;text-align:center;color:var(--mu);font-size:14px}
@@ -1229,5 +1229,21 @@ if (session) {
 }
 else if (REC) { showLogin(); const er = document.querySelector('#sgn .er'); if (er) er.textContent = 'لینک تغییر رمز منقضی شده یا قبلاً استفاده شده؛ دوباره «رمز را فراموش کردم» را بزن.'; }
 else if (top === self) showLogin();   // inside the test runner's frame the screen stays out of the way
+// new version check (2026-11-15): an iPhone can keep an old copy of the page alive for days (the user saw the old 8-tab
+// bottom bar). On opening and on coming back, the page asks the site for its current version and reloads once if newer.
+const VER = document.querySelector('meta[name=app-ver]').content;
+async function checkVer() {
+  if (top !== self || !navigator.onLine) return;
+  const a = document.activeElement; if (CONFLICT || (a && /INPUT|TEXTAREA|SELECT/.test(a.tagName))) return;
+  try {
+    const t = await fetch(location.pathname + '?v=' + Date.now(), { cache: 'no-store' }).then(r => r.ok ? r.text() : '');
+    const v = (t.match(/<meta name="app-ver" content="(\d+)"/) || [])[1];
+    if (!v || v === VER) return;
+    const last = +(sessionStorage.getItem('verReload') || 0); if (Date.now() - last < 60000) return;   // never loop
+    sessionStorage.setItem('verReload', String(Date.now())); clearTimeout(tm); await cw; location.reload();
+  } catch (e) {}
+}
+setTimeout(checkVer, 3000);
+document.addEventListener('visibilitychange', () => { if (!document.hidden) checkVer(); });
 </script>
 </body></html>
